@@ -19,19 +19,23 @@
             android:layout_height="0dp"
             android:orientation="vertical"
             android:layout_weight="2" >
+            <GridLayout
+                android:id="@+id/ButtonsBlock"
+                android:padding="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:rowCount="2"
+                android:columnCount="2">
+                <Button android:layout_gravity="fill" android:layout_rowWeight="1"  android:layout_columnWeight="1"/>
+                <Button android:layout_gravity="fill" android:layout_rowWeight="1"  android:layout_columnWeight="1"/>
+                <Button android:layout_gravity="fill" android:layout_rowWeight="1"  android:layout_columnWeight="1"/>
 
-            <fragment
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:id="@+id/GameTableFragment"
-                android:name="com.tectro.mobileapp4.GameTableFragment"/>
-            <fragment
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:id="@+id/ListFragment"
-                android:name="com.tectro.mobileapp4.ListFragment"/>
+                <Button
+                    android:layout_rowWeight="1"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill"
+                    android:onClick="test" />
+            </GridLayout>
         </LinearLayout>
 
         <LinearLayout
