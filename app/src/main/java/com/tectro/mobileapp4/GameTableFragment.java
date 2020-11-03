@@ -1,7 +1,14 @@
 package com.tectro.mobileapp4;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +24,7 @@ import com.tectro.mobileapp4.ConnectionModule.IConnection;
  */
 public class GameTableFragment extends Fragment implements IConnection {
 
+    private int numberOfColumns = 4;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -60,12 +68,16 @@ public class GameTableFragment extends Fragment implements IConnection {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_game_table, container, false);
-
-        rrr = view.findViewById(R.id.rrr);
-
         return view;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        ((RecyclerView)((Activity)context).findViewById(R.id.TableHolder)).setLayoutManager(new GridLayoutManager(context, numberOfColumns));
+
     }
 
     @Override
@@ -74,7 +86,6 @@ public class GameTableFragment extends Fragment implements IConnection {
         {
             case "":
                 {
-                    rrr.setText(String.valueOf(value));
                 }break;
         }
     }

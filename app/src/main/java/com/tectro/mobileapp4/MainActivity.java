@@ -3,6 +3,9 @@ package com.tectro.mobileapp4;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.tectro.mobileapp4.ConnectionModule.ConnectionManager;
 import com.tectro.mobileapp4.ConnectionModule.IConnection;
@@ -18,7 +21,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-   // public void test(View v)
+    public void test(View view) {
+    }
+
+    // public void test(View v)
    // {
    //     Animation animation = AnimationUtils.loadAnimation(this, R.anim.common_animation);
    //     findViewById(R.id.ButtonsBlock).startAnimation(animation);

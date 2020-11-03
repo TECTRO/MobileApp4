@@ -6,10 +6,7 @@ import android.content.Context;
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.tectro.mobileapp4.R;
-
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class ConnectionManager implements IConnection {

@@ -1,28 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
 
-    tools:context=".GameTableFragment">
+    tools:context=".GameTableFragment"
+    android:orientation="vertical">
 
     <!-- TODO: Update blank fragment layout -->
-
-    <RelativeLayout
-        android:gravity="center"
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_margin="10dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextView
-            android:text="AAAAAAAAAA"
-            android:id="@+id/rrr"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/rrr"
-            android:layout_below="@id/rrr"
-            android:text="BBBBBB" />
-    </RelativeLayout>
-</FrameLayout>
+        android:layout_height="match_parent"
+        android:id="@+id/TableHolder" />
+</LinearLayout>
