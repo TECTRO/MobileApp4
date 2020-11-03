@@ -2,11 +2,11 @@
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/GameTableCellImage"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
 
-    android:layout_rowWeight="1"
-    android:layout_columnWeight="1"
-    android:layout_gravity="fill"
+    android:adjustViewBounds="true"
 
 
-    />
+    android:contentDescription="@string/todo"
+    android:background="@color/colorPrimaryDark"
+    android:scaleType="fitCenter" />

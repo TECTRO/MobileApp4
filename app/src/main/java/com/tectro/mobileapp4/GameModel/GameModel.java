@@ -4,23 +4,28 @@ import com.tectro.mobileapp4.FigureModifiers.ColorEnum;
 import com.tectro.mobileapp4.FigureModifiers.HeightEnum;
 import com.tectro.mobileapp4.FigureModifiers.MarkEnum;
 import com.tectro.mobileapp4.FigureModifiers.ShapeEnum;
+import com.tectro.mobileapp4.GameModel.additional.DrawHelper;
 import com.tectro.mobileapp4.GameModel.additional.Figure;
 import com.tectro.mobileapp4.GameModel.additional.PlayerManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GameModel {
     //region Singleton
     private static GameModel current;
-    private final PlayerManager playerManager;
 
     public static GameModel CreateInstance(int playersAmount) {
         if (current == null) current = new GameModel(playersAmount);
         return current;
     }
+    public static GameModel GetInstance() {
+        return current;
+    }
 
     private GameModel(int playersAmount) {
+        DHelper = new DrawHelper(400,playersAmount);
         playerManager = new PlayerManager(playersAmount);
         TableSize = 4;
 
@@ -31,8 +36,18 @@ public class GameModel {
                     for (ShapeEnum shape : ShapeEnum.values())
                         remainingFigures.add(new Figure(color, height, mark, shape));
 
+        tableFigures = new FigureOwner[TableSize][];
         for (int i = 0; i < TableSize; i++)
             tableFigures[i] = new FigureOwner[TableSize];
+
+
+        for (int i = 0; i < TableSize; i++) {
+            for (int j = 0; j < TableSize; j++) {
+                SelectedFigure = new FigureOwner(remainingFigures.get(0),0);
+               // if(i<j)
+                PutFigure(i,j);
+            }
+        }
 
     }
 
@@ -46,8 +61,19 @@ public class GameModel {
     public FigureOwner[][] getTableFigures() {
         return tableFigures;
     }
+    public int getMaxPlayers()
+    {
+        return playerManager.getPlayersAmount();
+    }
 
+    public DrawHelper getDHelper() {
+        return DHelper;
+    }
     //endregion
+
+    private DrawHelper DHelper;
+
+    private final PlayerManager playerManager;
 
     public final int TableSize;
 
@@ -58,7 +84,7 @@ public class GameModel {
     FigureOwner SelectedFigure = null;
 
     public boolean PutFigure(int x, int y) {
-        if (x >= 0 && x < TableSize && y >= 0 && y < TableSize && SelectedFigure != null && tableFigures[x][y] != null) {
+        if (x >= 0 && x < TableSize && y >= 0 && y < TableSize && SelectedFigure != null ) {
             remainingFigures.remove(SelectedFigure.figure);
             tableFigures[x][y] = SelectedFigure;
 
@@ -72,6 +98,7 @@ public class GameModel {
     public void SelectFigure(Figure figure) {
         SelectedFigure = new FigureOwner(figure, playerManager.FindNextPlayer());
     }
+
 
 
     private List<List<FigureOwner>> GetSuitableLines() {
@@ -200,7 +227,7 @@ public class GameModel {
         return 0;
     }
 
-    class FigureOwner {
+    public class FigureOwner {
         //region Accessors
         public Figure getFigure() {
             return figure;

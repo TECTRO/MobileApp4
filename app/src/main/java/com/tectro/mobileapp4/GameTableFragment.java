@@ -14,7 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.tectro.mobileapp4.Adapter.GameTableAdapter;
 import com.tectro.mobileapp4.ConnectionModule.IConnection;
+import com.tectro.mobileapp4.GameModel.GameModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -65,10 +67,32 @@ public class GameTableFragment extends Fragment implements IConnection {
         }
     }
     TextView rrr;
+
+    RecyclerView GameMatrixHolder;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_game_table, container, false);
+
+        GameModel GModel = GameModel.CreateInstance(2);
+
+        GameMatrixHolder = (RecyclerView)view.findViewById(R.id.TableHolder);
+        GameMatrixHolder.setLayoutManager(new GridLayoutManager(getActivity(), numberOfColumns));
+        GameMatrixHolder.setAdapter(new GameTableAdapter(getActivity(),GModel.getTableFigures(),GModel.getDHelper(),(Integer r, Integer s)->
+        {
+
+        }));
+
+/*
+*
+*
+        IConnection connection  = (IConnection) getSupportFragmentManager().findFragmentById(R.id.GameTableFragment);
+        connection.Update("setAdapter", new GameTableAdapter(this,gameModel.getMaxPlayers(),gameModel.getTableFigures(),gameModel.getDHelper(),(Integer e,Integer s)->
+        {
+            //todo do some
+        }));
+* */
         return view;
     }
 
@@ -76,7 +100,7 @@ public class GameTableFragment extends Fragment implements IConnection {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        ((RecyclerView)((Activity)context).findViewById(R.id.TableHolder)).setLayoutManager(new GridLayoutManager(context, numberOfColumns));
+
 
     }
 
@@ -84,8 +108,12 @@ public class GameTableFragment extends Fragment implements IConnection {
     public void Update(String Key, Object value) {
         switch (Key)
         {
-            case "":
+            case "setAdapter":
                 {
+                    if(value instanceof GameTableAdapter) {
+                        GameMatrixHolder.setAdapter((GameTableAdapter) value);
+                       // GameMatrixHolder.notify();
+                    }
                 }break;
         }
     }

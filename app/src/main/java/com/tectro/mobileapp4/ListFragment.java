@@ -69,7 +69,7 @@ public class ListFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        connectionManager.TryAttach(context,R.id.GameTableFragment);
+        //connectionManager.TryAttach(context,R.id.GameTableFragment);
 
     }
 
@@ -82,11 +82,6 @@ public class ListFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_list, container, false);
 
-        v.findViewById(R.id.tstbtn).setOnClickListener(o ->
-        {
-            counter++;
-            connectionManager.Update("",counter);
-        });
 
 
         return v;
