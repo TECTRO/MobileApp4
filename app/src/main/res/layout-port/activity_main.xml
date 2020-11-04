@@ -37,8 +37,10 @@
                 android:textAlignment="center" />
 
             <ImageView
+                android:id="@+id/CurrentCellHolder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="StartAnimation"
                 android:minHeight="150dp" />
 
         </LinearLayout>
@@ -57,6 +59,7 @@
                 android:textAlignment="center" />
 
             <ImageView
+                android:id="@+id/NextCellHolder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="150dp"
@@ -66,8 +69,10 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/NextRoundBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
+        android:onClick="nextRound"
         android:text="@string/next_step" />
 </LinearLayout>

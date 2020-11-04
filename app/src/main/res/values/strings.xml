@@ -6,4 +6,5 @@
     <string name="enemy_message">Противник установил для вас:</string>
     <string name="next_step">Следующй ход</string>
     <string name="todo">TODO</string>
+    <string name="choose_figure_to_enemy">Выберите фигуру противника</string>
 </resources>

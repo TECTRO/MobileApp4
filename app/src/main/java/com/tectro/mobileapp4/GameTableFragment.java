@@ -2,6 +2,7 @@ package com.tectro.mobileapp4;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,14 +16,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.tectro.mobileapp4.Adapter.GameTableAdapter;
+import com.tectro.mobileapp4.ConnectionModule.ConnectionManager;
 import com.tectro.mobileapp4.ConnectionModule.IConnection;
 import com.tectro.mobileapp4.GameModel.GameModel;
+import com.tectro.mobileapp4.GameModel.additional.Player;
+
+import java.text.Collator;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link GameTableFragment#newInstance} factory method to
  * create an instance of this fragment.
- *
  */
 public class GameTableFragment extends Fragment implements IConnection {
 
@@ -66,7 +72,6 @@ public class GameTableFragment extends Fragment implements IConnection {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-    TextView rrr;
 
     RecyclerView GameMatrixHolder;
 
@@ -77,45 +82,39 @@ public class GameTableFragment extends Fragment implements IConnection {
 
         GameModel GModel = GameModel.CreateInstance(2);
 
-        GameMatrixHolder = (RecyclerView)view.findViewById(R.id.TableHolder);
+        GameMatrixHolder = (RecyclerView) view.findViewById(R.id.TableHolder);
         GameMatrixHolder.setLayoutManager(new GridLayoutManager(getActivity(), numberOfColumns));
-        GameMatrixHolder.setAdapter(new GameTableAdapter(getActivity(),GModel.getTableFigures(),GModel.getDHelper(),(Integer r, Integer s)->
+        GameMatrixHolder.setAdapter(new GameTableAdapter(getActivity(), position ->
         {
-
+            Integer[] result = Arrays.
+                    stream(GModel.PutFigureToGame(position))
+                    .mapToInt(pnt -> GModel.ConvertPosition(pnt.x, pnt.y))
+                    .boxed()
+                    .toArray(Integer[]::new);
+            connectionManager.Update("checkNextRoundAccessibility", null);
+            return result;
         }));
 
-/*
-*
-*
-        IConnection connection  = (IConnection) getSupportFragmentManager().findFragmentById(R.id.GameTableFragment);
-        connection.Update("setAdapter", new GameTableAdapter(this,gameModel.getMaxPlayers(),gameModel.getTableFigures(),gameModel.getDHelper(),(Integer e,Integer s)->
-        {
-            //todo do some
-        }));
-* */
         return view;
     }
+
+    ConnectionManager connectionManager;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
-
-
+        connectionManager = new ConnectionManager();
+        connectionManager.Register((IConnection) context);
     }
 
     @Override
     public void Update(String Key, Object value) {
-        switch (Key)
-        {
-            case "setAdapter":
-                {
-                    if(value instanceof GameTableAdapter) {
-                        GameMatrixHolder.setAdapter((GameTableAdapter) value);
-                       // GameMatrixHolder.notify();
-                    }
-                }break;
+        if (Key.equals("UpdPlColor")) {
+            int color = GameModel.GetInstance().getDHelper().GetPlayerColor((Player) value);
+
+            Activity a = getActivity();
+            if (a != null)
+                a.findViewById(R.id.PlayerColorHolder).setBackgroundColor(color);
         }
     }
-
 }

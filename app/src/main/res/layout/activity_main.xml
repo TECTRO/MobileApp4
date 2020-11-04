@@ -10,7 +10,7 @@
     <fragment
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="0.4"
         android:id="@+id/ListFragment"
         android:name="com.tectro.mobileapp4.ListFragment"/>
     <LinearLayout
@@ -32,6 +32,7 @@
                 android:textAlignment="center"
                 android:text="@string/enemy_message"/>
             <ImageView
+                android:id="@+id/CurrentCellHolder"
                 android:layout_width="match_parent"
                 android:minHeight="150dp"
                 android:layout_height="wrap_content"/>
@@ -41,29 +42,30 @@
                 android:textAlignment="center"
                 android:text="@string/player_message"/>
             <ImageView
+                android:id="@+id/NextCellHolder"
                 android:layout_width="match_parent"
                 android:minHeight="150dp"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1.9"
-            android:orientation="vertical">
+
             <fragment
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:layout_width="350dp"
+                android:layout_height="match_parent"
                 android:id="@+id/GameTableFragment"
                 android:name="com.tectro.mobileapp4.GameTableFragment"/>
-            <Button
-                android:layout_gravity="end"
-                android:layout_marginEnd="20dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/next_step"/>
-        </LinearLayout>
 
+
+        <Button
+            android:id="@+id/NextRoundBtn"
+            android:onClick="nextRound"
+            android:layout_gravity="center_vertical"
+            android:layout_width="40dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_height="match_parent"
+            android:minWidth="2dp"
+            android:text="@string/next_step"/>
     </LinearLayout>
 </LinearLayout>

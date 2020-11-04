@@ -5,12 +5,15 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tectro.mobileapp4.Adapter.ListAdapter;
 import com.tectro.mobileapp4.ConnectionModule.ConnectionManager;
+import com.tectro.mobileapp4.ConnectionModule.IConnection;
 
 import java.util.function.Consumer;
 
@@ -69,6 +72,7 @@ public class ListFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        connectionManager.Register((IConnection) context);
         //connectionManager.TryAttach(context,R.id.GameTableFragment);
 
     }
@@ -82,9 +86,14 @@ public class ListFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_list, container, false);
 
-
+        ((RecyclerView)v.findViewById(R.id.RemainingFigures)).setAdapter(new ListAdapter(inflater.getContext(),this::SendData));
 
         return v;
+    }
+
+    public void SendData(Integer position)
+    {
+        connectionManager.Update("next_figure", position);
     }
 }
 /*

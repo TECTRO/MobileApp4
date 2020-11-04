@@ -1,38 +1,42 @@
 package com.tectro.mobileapp4.GameModel.additional;
 
+import java.util.ArrayList;
+
 public class PlayerManager {
     //region Accessors
-    public int getPlayersAmount() {
-        return PlayersAmount;
-    }
-    public int getCurrentPlayer() {
+    public int getPlayersAmount() { return players.size(); }
+    public int getIndex(Player pl) { return players.indexOf(pl); }
+    public Player GetCurrent() {
         return currentPlayer;
     }
     //endregion
 
-    private int PlayersAmount;
-    private int currentPlayer;
+    private ArrayList<Player> players;
+    private Player currentPlayer;
 
     public PlayerManager(int PlayersAmount) {
-        this.PlayersAmount = PlayersAmount;
-        currentPlayer = 1;
+        players = new ArrayList<>();
+        for (int i = 0; i < PlayersAmount; i++)
+            players.add(new Player(this));
+
+        currentPlayer = players.get(0);
     }
 
-    public int GoToNextPlayer() {
-        if (currentPlayer + 1 <= PlayersAmount)
-            currentPlayer++;
-        else
-            currentPlayer = 1;
-
+    public Player ToNext() {
+        currentPlayer = GetNext();
         return currentPlayer;
     }
 
-    public int FindNextPlayer() {
-        int nextPlayer = currentPlayer;
-        if (nextPlayer + 1 <= PlayersAmount)
-            nextPlayer++;
-        else
-            nextPlayer = 1;
+    public Player GetNext() {
+        Player nextPlayer = null;
+
+        if(players.size()>0) {
+            int currentIndex = players.indexOf(currentPlayer);
+            if (currentIndex + 1 < players.size())
+                nextPlayer = players.get(currentIndex + 1);
+            else
+                nextPlayer = players.get(0);
+        }
 
         return nextPlayer;
     }

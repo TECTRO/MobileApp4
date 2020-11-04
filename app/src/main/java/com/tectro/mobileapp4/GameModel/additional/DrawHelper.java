@@ -1,5 +1,6 @@
 package com.tectro.mobileapp4.GameModel.additional;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import com.tectro.mobileapp4.FigureModifiers.MarkEnum;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.function.Function;
 
 import static com.tectro.mobileapp4.FigureModifiers.ShapeEnum.Circle;
 import static com.tectro.mobileapp4.FigureModifiers.ShapeEnum.Square;
@@ -34,14 +36,17 @@ public class DrawHelper {
     }
     //endregion
 
-    public DrawHelper(int bitmapSize, int maxPlayerCount) {
+    public DrawHelper(int bitmapSize, int playersAmount, Function<Player, Integer> getPlayerIndex) {
         rand = new Random();
-        GeneratePlayersBoundColors(maxPlayerCount);
+        GetPlayerIndex = getPlayerIndex;
+        GeneratePlayersBoundColors(playersAmount);
         BitmapSize = bitmapSize;
         this.bitmap = Bitmap.createBitmap(BitmapSize, BitmapSize, Bitmap.Config.RGB_565);
         this.canvas = new Canvas(bitmap);
         this.paint = new Paint();
     }
+
+    Function<Player, Integer> GetPlayerIndex;
 
     private int BitmapSize;
 
@@ -52,13 +57,16 @@ public class DrawHelper {
 
     public void ClearBitmap() {
         bitmap.eraseColor(Color.LTGRAY);
-        //paint.setColor(Color.LTGRAY);
-        //paint.setStyle(Paint.Style.FILL);
-        //canvas.drawRect(0,0,BitmapSize,BitmapSize,paint);
         paint.setStyle(Paint.Style.STROKE);
     }
 
     private ArrayList<Integer> PlayersBoundColors;
+
+    public Integer GetPlayerColor(Player player) {
+        if (player != null)
+            return PlayersBoundColors.get(GetPlayerIndex.apply(player));
+        else return null;
+    }
 
     private void GeneratePlayersBoundColors(int maxPlayerCount) {
         PlayersBoundColors = new ArrayList<>();
@@ -75,12 +83,29 @@ public class DrawHelper {
 
     }
 
-    public void DrawPlayerBound(int index) {
+    public void DrawPlayerBound(Player player) {
+        int index = GetPlayerIndex.apply(player);
+
         if (index >= 0) {
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(BitmapSize / 23f);
             paint.setColor(PlayersBoundColors.get(index));
             canvas.drawRect(0, 0, BitmapSize, BitmapSize, paint);
+        }
+    }
+
+    public void DrawPlayerMark(Player player) {
+        int index = GetPlayerIndex.apply(player);
+        ;
+
+        if (index >= 0) {
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(PlayersBoundColors.get(index));
+
+            float CircleRadius = BitmapSize / 5f / 2f;
+            float bitmapAnchor = BitmapSize / 5f * 4f;
+
+            canvas.drawCircle(bitmapAnchor, bitmapAnchor, CircleRadius, paint);
         }
     }
 

@@ -1,14 +1,21 @@
 package com.tectro.mobileapp4.GameModel;
 
+import android.graphics.Point;
+
 import com.tectro.mobileapp4.FigureModifiers.ColorEnum;
 import com.tectro.mobileapp4.FigureModifiers.HeightEnum;
 import com.tectro.mobileapp4.FigureModifiers.MarkEnum;
 import com.tectro.mobileapp4.FigureModifiers.ShapeEnum;
+import com.tectro.mobileapp4.GameModel.additional.Cell;
 import com.tectro.mobileapp4.GameModel.additional.DrawHelper;
 import com.tectro.mobileapp4.GameModel.additional.Figure;
+import com.tectro.mobileapp4.GameModel.additional.Player;
 import com.tectro.mobileapp4.GameModel.additional.PlayerManager;
+import com.tectro.mobileapp4.GameModel.additional.SuitableLine;
+import com.tectro.mobileapp4.GameModel.additional.SuitableLineType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -20,14 +27,65 @@ public class GameModel {
         if (current == null) current = new GameModel(playersAmount);
         return current;
     }
+
     public static GameModel GetInstance() {
         return current;
     }
+    //endregion
 
+    //region Accessors
+    public Figure getRemainingFigure(int pos) {
+        if (pos >= 0 && pos < remainingFigures.size())
+            return remainingFigures.get(pos);
+        return null;
+    }
+
+    public int getRemainingFiguresCount() {
+        return remainingFigures.size();
+    }
+
+    public Cell getTableFigure(int y, int x) {
+        return tableFigures[y][x];
+    }
+
+    public Cell getTableFigure(int position) {
+        int y = position / MatrixSize;
+        int x = position % MatrixSize;
+        return tableFigures[y][x];
+    }
+
+    public boolean setTableFigure(int position, Cell c) {
+        int y = position / MatrixSize;
+        int x = position % MatrixSize;
+        if (x >= 0 && x < MatrixSize && y >= 0 && y < MatrixSize) {
+            tableFigures[y][x] = c;
+            return true;
+        } else
+            return false;
+    }
+
+    public int getMaxPlayers() {
+        return playerManager.getPlayersAmount();
+    }
+
+    public DrawHelper getDHelper() {
+        return DHelper;
+    }
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
+    }
+
+
+    //endregion
+
+    //region Constructor
     private GameModel(int playersAmount) {
-        DHelper = new DrawHelper(400,playersAmount);
+        Random rand = new Random();
+
         playerManager = new PlayerManager(playersAmount);
-        TableSize = 4;
+        DHelper = new DrawHelper(400, playersAmount, playerManager::getIndex);
+        MatrixSize = 4;
 
         remainingFigures = new ArrayList<>();
         for (ColorEnum color : ColorEnum.values())
@@ -36,153 +94,182 @@ public class GameModel {
                     for (ShapeEnum shape : ShapeEnum.values())
                         remainingFigures.add(new Figure(color, height, mark, shape));
 
-        tableFigures = new FigureOwner[TableSize][];
-        for (int i = 0; i < TableSize; i++)
-            tableFigures[i] = new FigureOwner[TableSize];
+        tableFigures = new Cell[MatrixSize][];
+        for (int i = 0; i < MatrixSize; i++)
+            tableFigures[i] = new Cell[MatrixSize];
 
+        SetFigureToCurrent(remainingFigures.get(rand.nextInt(remainingFigures.size())));
+/*
 
-        for (int i = 0; i < TableSize; i++) {
-            for (int j = 0; j < TableSize; j++) {
-                SelectedFigure = new FigureOwner(remainingFigures.get(0),0);
-               // if(i<j)
-                PutFigure(i,j);
+        for (int y = 0; y < MatrixSize; y++) {
+            for (int x = 0; x < MatrixSize; x++) {
+
+                playerManager.GetCurrent().setFigureToPlace(remainingFigures.get(0));
+                PutFigure(x, y);
+                playerManager.ToNext();
+
             }
         }
-
-    }
-
-    //endregion
-
-    //region Accessors
-    public ArrayList<Figure> getRemainingFigures() {
-        return remainingFigures;
-    }
-
-    public FigureOwner[][] getTableFigures() {
-        return tableFigures;
-    }
-    public int getMaxPlayers()
-    {
-        return playerManager.getPlayersAmount();
-    }
-
-    public DrawHelper getDHelper() {
-        return DHelper;
+*/
     }
     //endregion
 
     private DrawHelper DHelper;
-
     private final PlayerManager playerManager;
 
-    public final int TableSize;
+    public final int MatrixSize;
+    private Cell[][] tableFigures;
 
     private ArrayList<Figure> remainingFigures;
 
-    private FigureOwner[][] tableFigures;
-
-    FigureOwner SelectedFigure = null;
-
-    public boolean PutFigure(int x, int y) {
-        if (x >= 0 && x < TableSize && y >= 0 && y < TableSize && SelectedFigure != null ) {
-            remainingFigures.remove(SelectedFigure.figure);
-            tableFigures[x][y] = SelectedFigure;
-
-            SelectedFigure = null;
-
-            return true;
-        } else
-            return false;
+    public void SetFigureToCurrent(Figure f) {
+        playerManager.GetCurrent().setFigureToPlace(f);
+        remainingFigures.remove(f);
     }
 
-    public void SelectFigure(Figure figure) {
-        SelectedFigure = new FigureOwner(figure, playerManager.FindNextPlayer());
+    public void SetFigureToNext(Figure f) {
+        playerManager.GetCurrent().setFigureToPlaceNext(f);
+        remainingFigures.remove(f);
     }
 
+    public Point[] PutFigureToGame(int position) {
+        Point pos = ConvertPosition(position);
+        return PutFigureToGame(pos.x, pos.y);
+    }
 
+    public Point[] PutFigureToGame(int x, int y) {
+        if (x >= 0 && x < MatrixSize && y >= 0 && y < MatrixSize) {
 
-    private List<List<FigureOwner>> GetSuitableLines() {
-        List<List<FigureOwner>> result = new ArrayList<>();
+            Point Existing = GetFigureIndexes(playerManager.GetCurrent().GetCell());
+            if (tableFigures[y][x] == null) {
+                if (Existing == null) {
+                    tableFigures[y][x] = playerManager.GetCurrent().GetCell();
+                    return new Point[]{new Point(x, y)};
+                } else {
+                    if (tableFigures[y][x] != tableFigures[Existing.y][Existing.x]) {
+                        tableFigures[y][x] = tableFigures[Existing.y][Existing.x];
+                        tableFigures[Existing.y][Existing.x] = null;
+                        return new Point[]{new Point(x, y), Existing};
+                    }
+                }
+            }
+        }
+        return new Point[0];
+    }
 
-        for (int i = 0; i < TableSize; i++) {
-            int PlayerVertical = 0;
+    private Point GetFigureIndexes(Cell tableCell) {
+        for (int y = 0; y < MatrixSize; y++)
+            for (int x = 0; x < MatrixSize; x++)
+                if (tableFigures[y][x] != null)
+                    if (tableFigures[y][x].equals(tableCell))
+                        return new Point(x, y);
+
+        return null;
+    }
+
+    public void NextRound() {
+        if (CanGoToNextRound()) {
+            playerManager.GetCurrent().setFigureToPlace(null);
+            SetFigureToNext(playerManager.GetCurrent().getFigureToPlaceNext());
+            playerManager.ToNext();
+        }
+    }
+
+    public boolean CanGoToNextRound() {
+        boolean result = false;
+        Player cur = playerManager.GetCurrent();
+        if (GetFigureIndexes(cur.GetCell()) != null && cur.getFigureToPlaceNext() != null)
+            result = true;
+        return result;
+    }
+
+    private List<SuitableLine> GetSuitableLines() {
+        List<SuitableLine> result = new ArrayList<>();
+
+        for (int i = 0; i < MatrixSize; i++) {
+            Player PlayerVertical = null;
             boolean VerticalError = false;
-            int PlayerHorizontal = 0;
+            Player PlayerHorizontal = null;
             boolean HorizontalError = false;
-            for (int j = 0; j < TableSize; j++) {
-                if (PlayerHorizontal == 0)
-                    PlayerHorizontal = tableFigures[i][j].player;
-                else if (PlayerHorizontal != tableFigures[i][j].player)
+            for (int j = 0; j < MatrixSize; j++) {
+                if (PlayerHorizontal == null)
+                    PlayerHorizontal = tableFigures[i][j].getOwner();
+                else if (PlayerHorizontal != tableFigures[i][j].getOwner())
                     VerticalError = true;
 
 
-                if (PlayerVertical == 0)
-                    PlayerVertical = tableFigures[j][i].player;
-                else if (PlayerVertical != tableFigures[j][i].player)
+                if (PlayerVertical == null)
+                    PlayerVertical = tableFigures[j][i].getOwner();
+                else if (PlayerVertical != tableFigures[j][i].getOwner())
                     HorizontalError = true;
             }
 
             if (!HorizontalError) {
-                List<FigureOwner> resultLine = new ArrayList<>();
-                for (int j = 0; j < TableSize; j++)
-                    resultLine.add(tableFigures[i][j]);
-                result.add(resultLine);
+                SuitableLine line = new SuitableLine(SuitableLineType.Horizontal, i);
+                for (int j = 0; j < MatrixSize; j++)
+                    line.Cells.add(tableFigures[i][j]);
+                result.add(line);
             }
 
             if (!VerticalError) {
-                List<FigureOwner> resultLine = new ArrayList<>();
-                for (int j = 0; j < TableSize; j++)
-                    resultLine.add(tableFigures[j][i]);
-                result.add(resultLine);
+                SuitableLine line = new SuitableLine(SuitableLineType.Vertical, i);
+                for (int j = 0; j < MatrixSize; j++)
+                    line.Cells.add(tableFigures[j][i]);
+                result.add(line);
             }
         }
 
 
-        int PlayerMain = 0;
+        Player PlayerMain = null;
         boolean MainError = false;
-        int PlayerOther = 0;
+
+        Player PlayerOther = null;
         boolean OtherError = false;
-        for (int i = 0; i < TableSize; i++) {
-            for (int j = 0; j < TableSize; j++) {
+
+        for (int i = 0; i < MatrixSize; i++) {
+            for (int j = 0; j < MatrixSize; j++) {
                 if (i == j) {
-                    if (PlayerMain == 0)
-                        PlayerMain = tableFigures[i][j].player;
-                    else if (PlayerMain != tableFigures[i][j].player)
+                    if (PlayerMain == null)
+                        PlayerMain = tableFigures[i][j].getOwner();
+                    else if (PlayerMain != tableFigures[i][j].getOwner())
                         MainError = true;
                 }
-                if (i + j == TableSize - 1) {
-                    if (PlayerOther == 0)
-                        PlayerOther = tableFigures[i][j].player;
-                    else if (PlayerOther != tableFigures[i][j].player)
+
+                if (i + j == MatrixSize - 1) {
+                    if (PlayerOther == null)
+                        PlayerOther = tableFigures[i][j].getOwner();
+                    else if (PlayerOther != tableFigures[i][j].getOwner())
                         OtherError = true;
                 }
             }
         }
         if (!MainError) {
-            List<FigureOwner> resultLine = new ArrayList<>();
-            for (int i = 0; i < TableSize; i++)
-                for (int j = 0; j < TableSize; j++)
+            SuitableLine line = new SuitableLine(SuitableLineType.Diagonal, 0);
+            for (int i = 0; i < MatrixSize; i++)
+                for (int j = 0; j < MatrixSize; j++)
                     if (i == j)
-                        resultLine.add(tableFigures[i][j]);
-            result.add(resultLine);
+                        line.Cells.add(tableFigures[i][j]);
+            result.add(line);
         }
 
         if (!OtherError) {
-            List<FigureOwner> resultLine = new ArrayList<>();
-            for (int i = 0; i < TableSize; i++)
-                for (int j = 0; j < TableSize; j++)
-                    if (i + j == TableSize - 1)
-                        resultLine.add(tableFigures[i][j]);
-            result.add(resultLine);
+            SuitableLine line = new SuitableLine(SuitableLineType.Diagonal, 1);
+            for (int i = 0; i < MatrixSize; i++)
+                for (int j = 0; j < MatrixSize; j++)
+                    if (i + j == MatrixSize - 1)
+                        line.Cells.add(tableFigures[i][j]);
+            result.add(line);
         }
 
         return result;
     }
 
-    public int CalculateResults() {
-        List<List<FigureOwner>> preLists = GetSuitableLines();
+    public SuitableLine CalculateResults() {
+        SuitableLine result = null;
 
-        for (List<FigureOwner> line : preLists) {
+        List<SuitableLine> preLists = GetSuitableLines();
+
+        for (SuitableLine line : preLists) {
             ColorEnum clr = null;
             HeightEnum hgt = null;
             MarkEnum mrk = null;
@@ -193,57 +280,47 @@ public class GameModel {
             boolean mrkErr = false;
             boolean shpErr = false;
 
-            int player = 0;
+            Player player = null;
 
-            for (FigureOwner item : line) {
-                player = item.player;
+            for (Cell item : line.Cells) {
+                player = item.getOwner();
 
                 if (clr == null)
-                    clr = item.figure.getColor();
-                else if (clr != item.figure.getColor())
+                    clr = item.getFigure().getColor();
+                else if (clr != item.getFigure().getColor())
                     clrErr = true;
 
                 if (hgt == null)
-                    hgt = item.figure.getHeight();
-                else if (hgt != item.figure.getHeight())
+                    hgt = item.getFigure().getHeight();
+                else if (hgt != item.getFigure().getHeight())
                     hgtErr = true;
 
                 if (mrk == null)
-                    mrk = item.figure.getMark();
-                else if (mrk != item.figure.getMark())
+                    mrk = item.getFigure().getMark();
+                else if (mrk != item.getFigure().getMark())
                     mrkErr = true;
 
                 if (shp == null)
-                    shp = item.figure.getShape();
-                else if (shp != item.figure.getShape())
+                    shp = item.getFigure().getShape();
+                else if (shp != item.getFigure().getShape())
                     shpErr = true;
             }
 
-            if (!clrErr || !hgtErr || !mrkErr || !shpErr){
-                playerManager.GoToNextPlayer();
-                return player;}
+            if (!clrErr || !hgtErr || !mrkErr || !shpErr)
+                result = line;
         }
-        playerManager.GoToNextPlayer();
-        return 0;
+        return result;
     }
 
-    public class FigureOwner {
-        //region Accessors
-        public Figure getFigure() {
-            return figure;
-        }
-
-        public int getPlayer() {
-            return player;
-        }
-        //endregion
-
-        private final Figure figure;
-        private final int player;
-
-        FigureOwner(Figure figure, int player) {
-            this.figure = figure;
-            this.player = player;
-        }
+    //region Helpers
+    public Point ConvertPosition(int position) {
+        int y = position / MatrixSize;
+        int x = position % MatrixSize;
+        return new Point(x, y);
     }
+
+    public int ConvertPosition(int x, int y) {
+        return y * MatrixSize + x;
+    }
+    //endregion
 }
