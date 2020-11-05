@@ -7,65 +7,67 @@
     android:gravity="center"
     android:orientation="horizontal"
     tools:context=".MainActivity">
+
     <fragment
+        android:id="@+id/ListFragment"
+        android:name="com.tectro.mobileapp4.ListFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.4"
-        android:id="@+id/ListFragment"
-        android:name="com.tectro.mobileapp4.ListFragment"/>
+        android:layout_weight="0.4" />
+
+
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_weight="2"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:text="@string/enemy_message"
+            android:textAlignment="center" />
+
+        <ImageView
+            android:id="@+id/CurrentCellHolder"
+            android:scaleType="fitCenter"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3"
+            android:minHeight="150dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:textSize="18sp"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            >
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:text="@string/enemy_message"/>
-            <ImageView
-                android:id="@+id/CurrentCellHolder"
-                android:layout_width="match_parent"
-                android:minHeight="150dp"
-                android:layout_height="wrap_content"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:text="@string/player_message"/>
-            <ImageView
-                android:id="@+id/NextCellHolder"
-                android:layout_width="match_parent"
-                android:minHeight="150dp"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+            android:text="@string/player_message"
+            android:textAlignment="center" />
 
-
-            <fragment
-                android:layout_gravity="center"
-                android:layout_width="350dp"
-                android:layout_height="match_parent"
-                android:id="@+id/GameTableFragment"
-                android:name="com.tectro.mobileapp4.GameTableFragment"/>
-
-
-        <Button
-            android:id="@+id/NextRoundBtn"
-            android:onClick="nextRound"
-            android:layout_gravity="center_vertical"
-            android:layout_width="40dp"
-            android:layout_marginLeft="3dp"
-            android:layout_marginRight="3dp"
-            android:layout_height="match_parent"
-            android:minWidth="2dp"
-            android:text="@string/next_step"/>
+        <ImageView
+            android:id="@+id/NextCellHolder"
+            android:scaleType="fitCenter"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3"
+            android:minHeight="150dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.8"/>
     </LinearLayout>
+
+
+    <fragment
+        android:id="@+id/GameTableFragment"
+        android:name="com.tectro.mobileapp4.GameTableFragment"
+        android:layout_width="350dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
 </LinearLayout>

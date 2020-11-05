@@ -36,9 +36,9 @@ public class DrawHelper {
     }
     //endregion
 
-    public DrawHelper(int bitmapSize, int playersAmount, Function<Player, Integer> getPlayerIndex) {
+    public DrawHelper(int bitmapSize, int playersAmount) {
         rand = new Random();
-        GetPlayerIndex = getPlayerIndex;
+        //GetPlayerIndex = getPlayerIndex;
         GeneratePlayersBoundColors(playersAmount);
         BitmapSize = bitmapSize;
         this.bitmap = Bitmap.createBitmap(BitmapSize, BitmapSize, Bitmap.Config.RGB_565);
@@ -46,7 +46,7 @@ public class DrawHelper {
         this.paint = new Paint();
     }
 
-    Function<Player, Integer> GetPlayerIndex;
+    //Function<Player, Integer> GetPlayerIndex;
 
     private int BitmapSize;
 
@@ -64,7 +64,7 @@ public class DrawHelper {
 
     public Integer GetPlayerColor(Player player) {
         if (player != null)
-            return PlayersBoundColors.get(GetPlayerIndex.apply(player));
+            return PlayersBoundColors.get(player.getIndex());
         else return null;
     }
 
@@ -84,7 +84,7 @@ public class DrawHelper {
     }
 
     public void DrawPlayerBound(Player player) {
-        int index = GetPlayerIndex.apply(player);
+        int index = player.getIndex();
 
         if (index >= 0) {
             paint.setStyle(Paint.Style.STROKE);
@@ -95,7 +95,7 @@ public class DrawHelper {
     }
 
     public void DrawPlayerMark(Player player) {
-        int index = GetPlayerIndex.apply(player);
+        int index = player.getIndex();
         ;
 
         if (index >= 0) {

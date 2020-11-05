@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  * Use the {@link ListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListFragment extends Fragment {
+public class ListFragment extends Fragment implements IConnection {
 
     //region Manager
     ConnectionManager connectionManager = new ConnectionManager();
@@ -78,15 +78,16 @@ public class ListFragment extends Fragment {
     }
 
     int counter = 0;
-
+    ListAdapter adapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         View v = inflater.inflate(R.layout.fragment_list, container, false);
+        adapter = new ListAdapter(inflater.getContext(),this::SendData);
 
-        ((RecyclerView)v.findViewById(R.id.RemainingFigures)).setAdapter(new ListAdapter(inflater.getContext(),this::SendData));
+        ((RecyclerView)v.findViewById(R.id.RemainingFigures)).setAdapter(adapter);
 
         return v;
     }
@@ -94,6 +95,13 @@ public class ListFragment extends Fragment {
     public void SendData(Integer position)
     {
         connectionManager.Update("next_figure", position);
+    }
+
+    @Override
+    public void Update(String Key, Object value) {
+        if(Key.equals("UpdListFragmentCollection") && adapter!=null)
+            adapter.notifyDataSetChanged();
+
     }
 }
 /*

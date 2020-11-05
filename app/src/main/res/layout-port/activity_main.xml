@@ -11,10 +11,10 @@
 
     <fragment
         android:id="@+id/GameTableFragment"
+        android:name="com.tectro.mobileapp4.GameTableFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:name="com.tectro.mobileapp4.GameTableFragment"/>
+        android:layout_weight="1" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,16 +32,25 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textAlignment="center"
                 android:text="@string/enemy_message"
-                android:textAlignment="center" />
+                android:textSize="24sp" />
 
             <ImageView
                 android:id="@+id/CurrentCellHolder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="40dp"
+                android:adjustViewBounds="true"
                 android:onClick="StartAnimation"
-                android:minHeight="150dp" />
+                android:scaleType="fitCenter" />
 
         </LinearLayout>
 
@@ -49,30 +58,31 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
+            android:gravity="center_horizontal"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/player_message"
-                android:textAlignment="center" />
+                android:layout_height="0dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="30dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:text="@string/player_message"/>
 
             <ImageView
                 android:id="@+id/NextCellHolder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="150dp"
-                android:onClick="ShowListFragment"/>
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="40dp"
+                android:adjustViewBounds="true"
+                android:onClick="ShowListFragment"
+                android:scaleType="fitCenter" />
 
         </LinearLayout>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/NextRoundBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:onClick="nextRound"
-        android:text="@string/next_step" />
 </LinearLayout>

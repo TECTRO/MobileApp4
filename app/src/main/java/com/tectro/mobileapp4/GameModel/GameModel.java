@@ -13,6 +13,7 @@ import com.tectro.mobileapp4.GameModel.additional.Player;
 import com.tectro.mobileapp4.GameModel.additional.PlayerManager;
 import com.tectro.mobileapp4.GameModel.additional.SuitableLine;
 import com.tectro.mobileapp4.GameModel.additional.SuitableLineType;
+import com.tectro.mobileapp4.GameModel.additional.Winner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,7 +85,7 @@ public class GameModel {
         Random rand = new Random();
 
         playerManager = new PlayerManager(playersAmount);
-        DHelper = new DrawHelper(400, playersAmount, playerManager::getIndex);
+        DHelper = new DrawHelper(400, playersAmount);
         MatrixSize = 4;
 
         remainingFigures = new ArrayList<>();
@@ -119,7 +120,6 @@ public class GameModel {
 
     public final int MatrixSize;
     private Cell[][] tableFigures;
-
     private ArrayList<Figure> remainingFigures;
 
     public void SetFigureToCurrent(Figure f) {
@@ -186,35 +186,39 @@ public class GameModel {
     private List<SuitableLine> GetSuitableLines() {
         List<SuitableLine> result = new ArrayList<>();
 
-        for (int i = 0; i < MatrixSize; i++) {
+        for (int y = 0; y < MatrixSize; y++) {
             Player PlayerVertical = null;
             boolean VerticalError = false;
             Player PlayerHorizontal = null;
             boolean HorizontalError = false;
-            for (int j = 0; j < MatrixSize; j++) {
-                if (PlayerHorizontal == null)
-                    PlayerHorizontal = tableFigures[i][j].getOwner();
-                else if (PlayerHorizontal != tableFigures[i][j].getOwner())
+            for (int x = 0; x < MatrixSize; x++) {
+                if (tableFigures[x][y] != null) {
+                    if (PlayerHorizontal == null)
+                        PlayerHorizontal = tableFigures[x][y].getOwner();
+                    else if (PlayerHorizontal != tableFigures[x][y].getOwner())
+                        VerticalError = true;
+                } else
                     VerticalError = true;
 
-
-                if (PlayerVertical == null)
-                    PlayerVertical = tableFigures[j][i].getOwner();
-                else if (PlayerVertical != tableFigures[j][i].getOwner())
-                    HorizontalError = true;
+                if (tableFigures[y][x] != null) {
+                    if (PlayerVertical == null)
+                        PlayerVertical = tableFigures[y][x].getOwner();
+                    else if (PlayerVertical != tableFigures[y][x].getOwner())
+                        HorizontalError = true;
+                } else HorizontalError = true;
             }
 
             if (!HorizontalError) {
-                SuitableLine line = new SuitableLine(SuitableLineType.Horizontal, i);
-                for (int j = 0; j < MatrixSize; j++)
-                    line.Cells.add(tableFigures[i][j]);
+                SuitableLine line = new SuitableLine(SuitableLineType.Horizontal, y);
+                for (int x = 0; x < MatrixSize; x++)
+                    line.Cells.add(tableFigures[y][x]);
                 result.add(line);
             }
 
             if (!VerticalError) {
-                SuitableLine line = new SuitableLine(SuitableLineType.Vertical, i);
-                for (int j = 0; j < MatrixSize; j++)
-                    line.Cells.add(tableFigures[j][i]);
+                SuitableLine line = new SuitableLine(SuitableLineType.Vertical, y);
+                for (int x = 0; x < MatrixSize; x++)
+                    line.Cells.add(tableFigures[x][y]);
                 result.add(line);
             }
         }
@@ -229,17 +233,21 @@ public class GameModel {
         for (int i = 0; i < MatrixSize; i++) {
             for (int j = 0; j < MatrixSize; j++) {
                 if (i == j) {
-                    if (PlayerMain == null)
-                        PlayerMain = tableFigures[i][j].getOwner();
-                    else if (PlayerMain != tableFigures[i][j].getOwner())
-                        MainError = true;
+                    if (tableFigures[i][j] != null) {
+                        if (PlayerMain == null)
+                            PlayerMain = tableFigures[i][j].getOwner();
+                        else if (PlayerMain != tableFigures[i][j].getOwner())
+                            MainError = true;
+                    } else MainError = true;
                 }
 
                 if (i + j == MatrixSize - 1) {
-                    if (PlayerOther == null)
-                        PlayerOther = tableFigures[i][j].getOwner();
-                    else if (PlayerOther != tableFigures[i][j].getOwner())
-                        OtherError = true;
+                    if (tableFigures[i][j] != null) {
+                        if (PlayerOther == null)
+                            PlayerOther = tableFigures[i][j].getOwner();
+                        else if (PlayerOther != tableFigures[i][j].getOwner())
+                            OtherError = true;
+                    } else OtherError = true;
                 }
             }
         }
@@ -264,7 +272,7 @@ public class GameModel {
         return result;
     }
 
-    public SuitableLine CalculateResults() {
+    private SuitableLine CalculateResults() {
         SuitableLine result = null;
 
         List<SuitableLine> preLists = GetSuitableLines();
@@ -310,6 +318,13 @@ public class GameModel {
                 result = line;
         }
         return result;
+    }
+
+    public Winner GetWinner() {
+        SuitableLine line = CalculateResults();
+        if (line != null)
+            return new Winner(getPlayerManager().GetCurrent(), line);
+        return null;
     }
 
     //region Helpers

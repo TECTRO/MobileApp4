@@ -2,8 +2,14 @@ package com.tectro.mobileapp4.GameModel.additional;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 public class Player {
     //region Accessors
+    private Supplier<List<Player>> listSupplier;
+    public int getIndex() { return listSupplier.get().indexOf(this); }
+
     public Figure getFigureToPlace() {
         return FigureToPlace;
     }
@@ -23,8 +29,9 @@ public class Player {
 
     PlayerManager currentManager;
 
-    public Player(@NonNull PlayerManager manager) {
+    public Player(@NonNull PlayerManager manager, Supplier<List<Player>> getPlayers) {
         currentManager = manager;
+        listSupplier = getPlayers;
     }
 
     private Figure FigureToPlace;

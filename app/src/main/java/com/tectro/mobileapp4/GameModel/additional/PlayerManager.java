@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class PlayerManager {
     //region Accessors
     public int getPlayersAmount() { return players.size(); }
-    public int getIndex(Player pl) { return players.indexOf(pl); }
+    //public int getIndex(Player pl) { return players.indexOf(pl); }
     public Player GetCurrent() {
         return currentPlayer;
     }
@@ -17,7 +17,7 @@ public class PlayerManager {
     public PlayerManager(int PlayersAmount) {
         players = new ArrayList<>();
         for (int i = 0; i < PlayersAmount; i++)
-            players.add(new Player(this));
+            players.add(new Player(this,()->players));
 
         currentPlayer = players.get(0);
     }

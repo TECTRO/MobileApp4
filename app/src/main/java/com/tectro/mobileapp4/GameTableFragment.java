@@ -10,9 +10,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tectro.mobileapp4.Adapter.GameTableAdapter;
@@ -95,6 +97,13 @@ public class GameTableFragment extends Fragment implements IConnection {
             return result;
         }));
 
+        ImageView NextRoundView  = (ImageView) view.findViewById(R.id.NextRoundView);
+        NextRoundView.setOnClickListener(r->
+        {
+            connectionManager.Update("ToNextRound", null);
+            connectionManager.Update("UpdListFragmentCollection", null);
+        });
+
         return view;
     }
 
@@ -105,6 +114,7 @@ public class GameTableFragment extends Fragment implements IConnection {
         super.onAttach(context);
         connectionManager = new ConnectionManager();
         connectionManager.Register((IConnection) context);
+        connectionManager.TryAttach(context, R.id.ListFragment);
     }
 
     @Override

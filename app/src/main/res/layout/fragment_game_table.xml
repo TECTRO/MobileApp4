@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".GameTableFragment">
 
@@ -12,12 +12,27 @@
 
         android:id="@+id/TableHolder"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
-    <View
+        android:layout_height="wrap_content" />
+    <!--android:layout_weight="0.05"
+            android:layout_height="0dp"-->
+    <FrameLayout
         android:id="@+id/PlayerColorHolder"
-        android:background="@color/colorPrimaryDark"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.05"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/colorPrimaryDark"
+        >
+
+        <ImageView
+            android:id="@+id/NextRoundView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/todo"
+            android:padding="6dp"
+            android:scaleType="fitEnd"
+
+            android:src="@drawable/arrow_next_2" />
+    </FrameLayout>
 </LinearLayout>

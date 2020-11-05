@@ -1,5 +1,6 @@
 package com.tectro.mobileapp4;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -8,11 +9,16 @@ import android.graphics.ImageDecoder;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.tectro.mobileapp4.Adapter.GameTableAdapter;
 import com.tectro.mobileapp4.ConnectionModule.ConnectionManager;
@@ -21,6 +27,7 @@ import com.tectro.mobileapp4.GameModel.GameModel;
 import com.tectro.mobileapp4.GameModel.additional.DrawHelper;
 import com.tectro.mobileapp4.GameModel.additional.Figure;
 import com.tectro.mobileapp4.GameModel.additional.Player;
+import com.tectro.mobileapp4.GameModel.additional.Winner;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -31,13 +38,22 @@ public class MainActivity extends AppCompatActivity implements IConnection {
     Animation itemAnimation;
     ConnectionManager connectionManager;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        gameModel = GameModel.CreateInstance(2);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowInsetsController c = getWindow().getInsetsController();
+            if (c != null)
+                c.hide(WindowInsets.Type.statusBars());
+        } else
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         itemAnimation = AnimationUtils.loadAnimation(this, R.anim.bounce_animation);
-        gameModel = GameModel.CreateInstance(2);
         connectionManager = new ConnectionManager();
         connectionManager.TryAttach(this, R.id.GameTableFragment);
         UpdatePreviews();
@@ -57,13 +73,17 @@ public class MainActivity extends AppCompatActivity implements IConnection {
         connectionManager.Update("UpdPlColor", current);
 
         drawer.ClearBitmap();
+        drawer.DrawPlayerBound(current);
+
         if (current.getFigureToPlace() != null)
             drawer.DrawFigure(current.getFigureToPlace());
         ((ImageView) findViewById(R.id.CurrentCellHolder)).setImageBitmap(drawer.GetBitmap());
 
         drawer.ClearBitmap();
-        if (current.getFigureToPlaceNext() != null)
+        drawer.DrawPlayerBound(gameModel.getPlayerManager().GetNext());
+        if (current.getFigureToPlaceNext() != null) {
             drawer.DrawFigure(current.getFigureToPlaceNext());
+        }
         ((ImageView) findViewById(R.id.NextCellHolder)).setImageBitmap(drawer.GetBitmap());
 
         UpdateLockBtn();
@@ -77,16 +97,11 @@ public class MainActivity extends AppCompatActivity implements IConnection {
 
     }
 
-    public void nextRound(View view) {
-        gameModel.NextRound();
-        UpdatePreviews();
-    }
-
     public void UpdateLockBtn() {
         if (gameModel.CanGoToNextRound())
-            findViewById(R.id.NextRoundBtn).setVisibility(View.VISIBLE);
+            findViewById(R.id.NextRoundView).setVisibility(View.VISIBLE);
         else
-            findViewById(R.id.NextRoundBtn).setVisibility(View.GONE);
+            findViewById(R.id.NextRoundView).setVisibility(View.GONE);
 
     }
 
@@ -105,6 +120,16 @@ public class MainActivity extends AppCompatActivity implements IConnection {
 
         if (Key.equals("checkNextRoundAccessibility")) {
             UpdateLockBtn();
+        }
+
+        if (Key.equals("ToNextRound")) {
+            Winner winner = gameModel.GetWinner();
+            if (winner == null) {
+                gameModel.NextRound();
+                UpdatePreviews();
+            } else
+                Toast.makeText(this, "Победил игрок " + (winner.getWinner().getIndex() + 1), Toast.LENGTH_LONG).show();
+
         }
     }
 }

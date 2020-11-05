@@ -13,11 +13,11 @@ public class ConnectionManager implements IConnection {
     private ArrayList<IConnection> connections = new ArrayList<>();
 
     public void Register(IConnection connection) {
-        if (!connections.contains(connection)) connections.add(connection);
+        if (!connections.contains(connection) && connection!=null) connections.add(connection);
     }
 
     public void Unregister(IConnection connection) {
-        if (connections.contains(connection)) connections.remove(connection);
+        if (connections.contains(connection) && connection!=null) connections.remove(connection);
     }
 
     private void doCommand(Consumer<IConnection> invoke) {
